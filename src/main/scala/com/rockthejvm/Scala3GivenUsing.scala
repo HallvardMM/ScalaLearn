@@ -43,8 +43,31 @@ object Scala3GivenUsing{
 
     // deriving givens
     // working with options
+    // create a given Ordering[Option[T]] if we had a Ordering[T] in scope
 
-    
+    given optionOrdering[T](using normalOrdering: Ordering[T]): Ordering[Option[T]] with {
+        override def compare(x: Option[T], y:Option[T]) = (x,y) match{
+            case (None,None) => 0
+            case (None,_) => -1
+            case (_,None) => 1
+            case (Some(x), Some(y)) => normalOrdering.compare(x,y)
+        }
+        
+        def sortThings[T](things: List[T])(using ordering: Ordering[T]) = ???
+
+        val maybePersons: List[Option[Person]] = List()
+        sortThings(maybePersons) // (optionOrdering(StandardValues.standardPersonOrdering))
+
+        // Where are givens useful?
+        /*
+        - type classes
+        - dependency injections
+        - contextual abstractions, i.e ability to use code for some types but not for others
+        - type-level programming
+        */
+    }
+
+
 }
 
 object StandardValues {
